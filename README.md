@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/cnych-seo-mcp-badge.png)](https://mseep.ai/app/cnych-seo-mcp)
+
 # SEO MCP
 
 A MCP (Model Control Protocol) SEO tool service based on Ahrefs data. Includes features such as backlink analysis, keyword research, traffic estimation, and more.
