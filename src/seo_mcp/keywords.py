@@ -3,6 +3,51 @@ from typing import List, Optional, Any, Dict
 import requests
 
 
+def _coerce_int(value: Any, default: int = 0) -> int:
+    try:
+        if isinstance(value, bool):
+            return default
+        if isinstance(value, (int,)):
+            return int(value)
+        if isinstance(value, float):
+            return int(round(value))
+        if isinstance(value, str) and value.strip().isdigit():
+            return int(value.strip())
+    except Exception:
+        pass
+    return default
+
+
+def _map_difficulty_label_to_int(label: Optional[str]) -> int:
+    if not isinstance(label, str):
+        return 0
+    mapping = {
+        "VeryEasy": 10,
+        "Easy": 25,
+        "Medium": 50,
+        "Hard": 75,
+        "VeryHard": 90,
+        "SuperHard": 95,
+    }
+    return mapping.get(label, 0)
+
+
+def _map_volume_label_to_int(label: Optional[str]) -> int:
+    if not isinstance(label, str):
+        return 0
+    mapping = {
+        "LessThanTen": 5,
+        "TenToOneHundred": 50,
+        "MoreThanOneHundred": 120,
+        "Hundreds": 300,
+        "Thousands": 1500,
+        "TensOfThousands": 15000,
+        "HundredsOfThousands": 150000,
+        "Millions": 1500000,
+    }
+    return mapping.get(label, 0)
+
+
 def format_keyword_ideas(keyword_data: Optional[List[Any]]) -> List[str]:
     if not keyword_data or len(keyword_data) < 2:
         return ["\n❌ No valid keyword ideas retrieved"]
@@ -16,11 +61,22 @@ def format_keyword_ideas(keyword_data: Optional[List[Any]]) -> List[str]:
         all_ideas = data["allIdeas"]["results"]
         # total = data["allIdeas"].get("total", 0)
         for idea in all_ideas:
+            difficulty_value = idea.get('difficulty')
+            volume_value = idea.get('volume')
+            if difficulty_value is None:
+                difficulty_value = _map_difficulty_label_to_int(idea.get('difficultyLabel'))
+            else:
+                difficulty_value = _coerce_int(difficulty_value, 0)
+            if volume_value is None:
+                volume_value = _map_volume_label_to_int(idea.get('volumeLabel'))
+            else:
+                volume_value = _coerce_int(volume_value, 0)
+
             simplified_idea = {
                 "keyword": idea.get('keyword', 'No keyword'),
                 "country": idea.get('country', '-'),
-                "difficulty": idea.get('difficultyLabel', 'Unknown'),
-                "volume": idea.get('volumeLabel', 'Unknown'),
+                "difficulty": difficulty_value,
+                "volume": volume_value,
                 "updatedAt": idea.get('updatedAt', '-')
             }
             result.append({
@@ -33,11 +89,22 @@ def format_keyword_ideas(keyword_data: Optional[List[Any]]) -> List[str]:
         question_ideas = data["questionIdeas"]["results"]
         # total = data["questionIdeas"].get("total", 0)
         for idea in question_ideas:
+            difficulty_value = idea.get('difficulty')
+            volume_value = idea.get('volume')
+            if difficulty_value is None:
+                difficulty_value = _map_difficulty_label_to_int(idea.get('difficultyLabel'))
+            else:
+                difficulty_value = _coerce_int(difficulty_value, 0)
+            if volume_value is None:
+                volume_value = _map_volume_label_to_int(idea.get('volumeLabel'))
+            else:
+                volume_value = _coerce_int(volume_value, 0)
+
             simplified_idea = {
                 "keyword": idea.get('keyword', 'No keyword'),
                 "country": idea.get('country', '-'),
-                "difficulty": idea.get('difficultyLabel', 'Unknown'),
-                "volume": idea.get('volumeLabel', 'Unknown'),
+                "difficulty": difficulty_value,
+                "volume": volume_value,
                 "updatedAt": idea.get('updatedAt', '-')
             }
             result.append({
