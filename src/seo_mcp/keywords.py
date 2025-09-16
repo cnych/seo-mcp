@@ -48,18 +48,16 @@ def _map_volume_label_to_int(label: Optional[str]) -> int:
     return mapping.get(label, 0)
 
 
-def format_keyword_ideas(keyword_data: Optional[List[Any]]) -> List[str]:
+def format_keyword_ideas(keyword_data: Optional[List[Any]]) -> List[Dict[str, Any]]:
     if not keyword_data or len(keyword_data) < 2:
-        return ["\n❌ No valid keyword ideas retrieved"]
+        return []
     
     data = keyword_data[1]
-
     result = []
     
-    # 处理常规关键词推荐
+    # Process regular keyword recommendations
     if "allIdeas" in data and "results" in data["allIdeas"]:
         all_ideas = data["allIdeas"]["results"]
-        # total = data["allIdeas"].get("total", 0)
         for idea in all_ideas:
             difficulty_value = idea.get('difficulty')
             volume_value = idea.get('volume')
@@ -72,22 +70,17 @@ def format_keyword_ideas(keyword_data: Optional[List[Any]]) -> List[str]:
             else:
                 volume_value = _coerce_int(volume_value, 0)
 
-            simplified_idea = {
+            result.append({
                 "keyword": idea.get('keyword', 'No keyword'),
                 "country": idea.get('country', '-'),
                 "difficulty": difficulty_value,
                 "volume": volume_value,
                 "updatedAt": idea.get('updatedAt', '-')
-            }
-            result.append({
-                "label": "keyword ideas",
-                "value": simplified_idea
             })
     
-    # 处理问题类关键词推荐
+    # Process question keyword recommendations  
     if "questionIdeas" in data and "results" in data["questionIdeas"]:
         question_ideas = data["questionIdeas"]["results"]
-        # total = data["questionIdeas"].get("total", 0)
         for idea in question_ideas:
             difficulty_value = idea.get('difficulty')
             volume_value = idea.get('volume')
@@ -100,25 +93,19 @@ def format_keyword_ideas(keyword_data: Optional[List[Any]]) -> List[str]:
             else:
                 volume_value = _coerce_int(volume_value, 0)
 
-            simplified_idea = {
+            result.append({
                 "keyword": idea.get('keyword', 'No keyword'),
                 "country": idea.get('country', '-'),
                 "difficulty": difficulty_value,
                 "volume": volume_value,
-                "updatedAt": idea.get('updatedAt', '-')
-            }
-            result.append({
-                "label": "question ideas",
-                "value": simplified_idea
+                "updatedAt": idea.get('updatedAt', '-'),
+                "type": "question"
             })
-    
-    if not result:
-        return ["\n❌ No valid keyword ideas retrieved"]
     
     return result
 
 
-def get_keyword_ideas(token: str, keyword: str, country: str = "us", search_engine: str = "Google") -> Optional[List[str]]:
+def get_keyword_ideas(token: str, keyword: str, country: str = "us", search_engine: str = "Google") -> Optional[List[Dict[str, Any]]]:
     if not token:
         return None
     

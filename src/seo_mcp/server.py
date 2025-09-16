@@ -14,7 +14,7 @@ from seo_mcp.keywords import get_keyword_ideas, get_keyword_difficulty
 from seo_mcp.traffic import check_traffic
 
 
-mcp = FastMCP("SEO MCP")
+mcp = FastMCP("SEO MCP - Test")
 
 # CapSolver website: https://dashboard.capsolver.com/passport/register?inviteCode=1dTH7WQSfHD0
 # Get API Key from environment variable - must be set for production use
@@ -98,7 +98,7 @@ def get_backlinks_list(domain: str) -> Optional[Dict[str, Any]]:
 
 
 @mcp.tool()
-def keyword_generator(keyword: str, country: str = "us", search_engine: str = "Google") -> Optional[List[str]]:
+def keyword_generator(keyword: str, country: str = "us", search_engine: str = "Google") -> Optional[List[Dict[str, Any]]]:
     """
     Get keyword ideas for the specified keyword
     """
