@@ -70,3 +70,6 @@ signature_cache.json
 temp/
 
 logs/
+api/debug_capsolver.py
+api/test_direct.py
+.github/mcp.json
