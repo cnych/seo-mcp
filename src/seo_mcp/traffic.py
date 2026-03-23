@@ -29,8 +29,8 @@ def check_traffic(token: str, domain_or_url: str, mode: Literal["subdomains", "e
     params = {
         "input": json.dumps({
             "captcha": token,
-            "country": country,
-            "protocol": "None",
+            "country": None if country == "None" else country,
+            "protocol": None,
             "mode": mode,
             "url": domain_or_url
         })

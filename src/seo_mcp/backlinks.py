@@ -178,7 +178,7 @@ def get_backlinks(signature: str, valid_until: str, domain: str) -> Optional[Lis
     
     url = "https://ahrefs.com/v4/stGetFreeBacklinksList"
     payload = {
-        "reportType": "TopBacklinks",
+        "reportType": ["TopBacklinks"],
         "signedInput": {
             "signature": signature,
             "input": {

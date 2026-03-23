@@ -1,53 +1,38 @@
 from typing import List, Optional, Any, Dict
+import json
 
 import requests
 
 
+def _format_idea(idea: dict, label: str) -> str:
+    return json.dumps({
+        "label": label,
+        "keyword": idea.get('keyword', 'No keyword'),
+        "country": idea.get('country', '-'),
+        "difficulty": idea.get('difficultyLabel', 'Unknown'),
+        "volume": idea.get('volumeLabel', 'Unknown'),
+        "updatedAt": idea.get('updatedAt', '-')
+    })
+
+
 def format_keyword_ideas(keyword_data: Optional[List[Any]]) -> List[str]:
     if not keyword_data or len(keyword_data) < 2:
-        return ["\n❌ No valid keyword ideas retrieved"]
-    
-    data = keyword_data[1]
+        return ["No valid keyword ideas retrieved"]
 
+    data = keyword_data[1]
     result = []
-    
-    # 处理常规关键词推荐
+
     if "allIdeas" in data and "results" in data["allIdeas"]:
-        all_ideas = data["allIdeas"]["results"]
-        # total = data["allIdeas"].get("total", 0)
-        for idea in all_ideas:
-            simplified_idea = {
-                "keyword": idea.get('keyword', 'No keyword'),
-                "country": idea.get('country', '-'),
-                "difficulty": idea.get('difficultyLabel', 'Unknown'),
-                "volume": idea.get('volumeLabel', 'Unknown'),
-                "updatedAt": idea.get('updatedAt', '-')
-            }
-            result.append({
-                "label": "keyword ideas",
-                "value": simplified_idea
-            })
-    
-    # 处理问题类关键词推荐
+        for idea in data["allIdeas"]["results"]:
+            result.append(_format_idea(idea, "keyword ideas"))
+
     if "questionIdeas" in data and "results" in data["questionIdeas"]:
-        question_ideas = data["questionIdeas"]["results"]
-        # total = data["questionIdeas"].get("total", 0)
-        for idea in question_ideas:
-            simplified_idea = {
-                "keyword": idea.get('keyword', 'No keyword'),
-                "country": idea.get('country', '-'),
-                "difficulty": idea.get('difficultyLabel', 'Unknown'),
-                "volume": idea.get('volumeLabel', 'Unknown'),
-                "updatedAt": idea.get('updatedAt', '-')
-            }
-            result.append({
-                "label": "question ideas",
-                "value": simplified_idea
-            })
-    
+        for idea in data["questionIdeas"]["results"]:
+            result.append(_format_idea(idea, "question ideas"))
+
     if not result:
-        return ["\n❌ No valid keyword ideas retrieved"]
-    
+        return ["No valid keyword ideas retrieved"]
+
     return result
 
 
@@ -59,9 +44,9 @@ def get_keyword_ideas(token: str, keyword: str, country: str = "us", search_engi
     payload = {
         "withQuestionIdeas": True,
         "captcha": token,
-        "searchEngine": search_engine,
+        "searchEngine": [search_engine],
         "country": country,
-        "keyword": ["Some", keyword]
+        "keyword": keyword
     }
     
     headers = {
